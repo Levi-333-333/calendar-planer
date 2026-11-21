@@ -27,13 +27,7 @@ class Event:
         return cls(**data)
 
     def time_validation(self):
-        time = datetime.strptime(self.time, "%H:%M").time()
-        if time.minute >= 60:
-            raise ValueError("Слишком много минут. Максимум: 59")
-        elif time.minute < 0:
-            raise ValueError("Минуты не могут быть отрицательными")
-
-        if time.hour > 23:
-            raise ValueError("Слишком много часов. Максимум: 23")
-        elif time.hour < 0:
-            raise ValueError("Часы не могут быть отрицательными")
+        try:
+            datetime.strptime(self.time, "%H:%M").time()
+        except ValueError:
+            raise ValueError("Неверный формат записи времени. Ожидается: 'Часы:Минуты', где 0 <= Часы <= 23 и 0 <= Минуты <= 59")

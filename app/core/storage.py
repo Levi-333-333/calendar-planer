@@ -12,4 +12,4 @@ class Storage:
     def save_events(events: list[Event],
                     file:str = FILE_PATH) -> None:
         with open(file, 'w', encoding="utf-8") as outfile:
-            json.dump([event.to_dict() for event in events], outfile, indent=4)
+            json.dump([event.to_dict() for event in events], outfile, indent=4, ensure_ascii=False)

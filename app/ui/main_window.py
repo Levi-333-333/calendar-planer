@@ -152,3 +152,10 @@ class App(tk.Tk):
 
     def delete_event(self):
         print(f"Удаление события на {self.selected_date_for_menu}")
+
+        events_on_day = [e for e in self.events_list if e["date"] == self.selected_date_for_menu]
+        if not events_on_day:
+            return
+
+        self.events_list.remove(events_on_day[0])
+        

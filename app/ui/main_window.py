@@ -2,6 +2,7 @@ import tkinter as tk
 from tkcalendar import Calendar
 import datetime
 from app.core import Storage
+from .dialogs import EventDialog
 
 class App(tk.Tk):
     def __init__(self):
@@ -12,7 +13,7 @@ class App(tk.Tk):
         self.current_year = datetime.date.today().year
         self.current_month = datetime.date.today().month
         self.calendar = None
-        self.event_list = Storage.load_events()
+        self.events_list = Storage.load_events()
         self.selected_date_for_menu = None
 
         self.context_menu = self.init_context_menu()
@@ -29,7 +30,7 @@ class App(tk.Tk):
             month=self.current_month, 
             firstweekday="monday", 
             locale="ru_RU",
-            date_pattern="yyyy-mm-dd"
+            date_pattern="yyyy:mm:dd"
         )
         
         self.calendar._l_month.pack_forget()
@@ -76,7 +77,7 @@ class App(tk.Tk):
             print(f"DEBUG: Ошибка получения текста: {e}")
             return
 
-        # --- ГЛАВНЫЙ ТРЮК: Симулируем левый клик, чтобы tkcalendar обновил выбор ---
+        # Симулируем левый клик, чтобы tkcalendar обновил выбор
         try:
             widget.event_generate("<ButtonPress-1>")
             widget.event_generate("<ButtonRelease-1>")
@@ -85,16 +86,16 @@ class App(tk.Tk):
         except Exception as e:
             print(f"DEBUG: Ошибка симуляции клика: {e}")
 
-        # Теперь get_date() должен вернуть дату нажатого дня
+        # get_date() должен вернуть дату нажатого дня
         selected_date = self.calendar.get_date()
         print(f"DEBUG: get_date() вернул: {selected_date}")
         self.selected_date_for_menu = selected_date
 
         # Проверяем наличие событий
         try:
-            has_events = any(e["date"] == selected_date for e in self.event_list)
+            has_events = any(e["date"] == selected_date for e in self.events_list)
         except (TypeError, KeyError):
-            has_events = any(e.date == selected_date for e in self.event_list)
+            has_events = any(e.date == selected_date for e in self.events_list)
         print(f"DEBUG: Событий на эту дату: {has_events}")
 
         if has_events:
@@ -124,8 +125,20 @@ class App(tk.Tk):
             self.current_year += 1
         self.draw_window()
 
+    def on_event_save(self, new_data, old_data):
+        if old_data is None:
+            self.events_list.append(new_data.to_dict())
+            Storage.save_events(self.events_list)
+        else:
+            index = self.events_list.index(old_data)
+            self.events_list[index] = new_data
+
+        Storage.save_events(self.events_list)
+        self.draw_window()
+
     def add_event(self):
         print(f"Добавление события на {self.selected_date_for_menu}")
+        add_event_window = EventDialog(self, self.on_event_save, "Создание события", self.selected_date_for_menu)
 
     def edit_event(self):
         print(f"Редактирование события на {self.selected_date_for_menu}")

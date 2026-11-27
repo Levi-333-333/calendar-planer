@@ -9,7 +9,7 @@ class Storage:
             return json.load(infile)
 
     @staticmethod
-    def save_events(events: list[Event],
+    def save_events(events: list[dict],
                     file:str = FILE_PATH) -> None:
         with open(file, 'w', encoding="utf-8") as outfile:
-            json.dump([event.to_dict() for event in events], outfile, indent=4, ensure_ascii=False)
+            json.dump([event for event in events], outfile, indent=4, ensure_ascii=False)

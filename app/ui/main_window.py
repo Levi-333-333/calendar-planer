@@ -128,7 +128,6 @@ class App(tk.Tk):
     def on_event_save(self, new_data, old_data):
         if old_data is None:
             self.events_list.append(new_data)
-            Storage.save_events(self.events_list)
         else:
             index = self.events_list.index(old_data)
             self.events_list[index] = new_data

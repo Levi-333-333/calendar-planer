@@ -158,4 +158,5 @@ class App(tk.Tk):
             return
 
         self.events_list.remove(events_on_day[0])
+        Storage.save_events(self.events_list)
         

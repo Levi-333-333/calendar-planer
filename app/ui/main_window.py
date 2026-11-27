@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkcalendar import Calendar
 import datetime
 from app.core import Storage
@@ -14,7 +15,7 @@ class App(tk.Tk):
         self.current_month = datetime.date.today().month
         self.calendar = None
         self.events_list = Storage.load_events()
-        self.selected_date_for_menu = None
+        self.selected_date = None
 
         self.context_menu = self.init_context_menu()
         self.draw_window()
@@ -37,6 +38,8 @@ class App(tk.Tk):
         self.calendar._r_month.pack_forget()
         self.calendar._l_year.pack_forget()
         self.calendar._r_year.pack_forget()
+
+        self.calendar.bind("<<CalendarSelected>>", self.draw_events_list)
 
         # --- Привязка к каждому дню через _calendar ---
         print(f"DEBUG: _calendar содержит {len(self.calendar._calendar)} строк")
@@ -89,7 +92,7 @@ class App(tk.Tk):
         # get_date() должен вернуть дату нажатого дня
         selected_date = self.calendar.get_date()
         print(f"DEBUG: get_date() вернул: {selected_date}")
-        self.selected_date_for_menu = selected_date
+        self.selected_date = selected_date
 
         # Проверяем наличие событий
         try:
@@ -110,6 +113,24 @@ class App(tk.Tk):
             print("DEBUG: Меню вызвано!")
         finally:
             self.context_menu.grab_release()
+
+    def draw_events_list(self, event=None):
+        colums = ("time", "title", "priority")
+        self.tree = ttk.Treeview(self, columns=colums, show="headings", selectmode="browse")
+
+        self.tree.heading("time", text="Время")
+        self.tree.heading("title", text="Название")
+        self.tree.heading("priority", text="Приоритет")
+
+        self.tree.column("time", width=60, anchor=tk.CENTER)
+        self.tree.column("title", width=250, anchor=tk.W)
+        self.tree.column("priority", width=90, anchor=tk.CENTER)
+
+        scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscroll=scrollbar.set)
+
+        self.tree.grid(row=0, column=9, rowspan=5, columnspan=5, padx=5, pady=5)
+        scrollbar.grid(row=0, column=15, rowspan=5, pady=5)
 
     def prev_month(self):
         self.current_month -= 1
@@ -136,23 +157,23 @@ class App(tk.Tk):
         self.draw_window()
 
     def add_event(self):
-        print(f"Добавление события на {self.selected_date_for_menu}")
-        EventDialog(self, self.on_event_save, "Создание события", self.selected_date_for_menu)
+        print(f"Добавление события на {self.selected_date}")
+        EventDialog(self, self.on_event_save, "Создание события", self.selected_date)
 
     def edit_event(self):
-        print(f"Редактирование события на {self.selected_date_for_menu}")
+        print(f"Редактирование события на {self.selected_date}")
 
-        events_on_day = [e for e in self.events_list if e["date"] == self.selected_date_for_menu]
+        events_on_day = [e for e in self.events_list if e["date"] == self.selected_date]
         if not events_on_day:
             return
 
         event_to_edit = events_on_day[0]
-        EventDialog(self, self.on_event_save, "Редактирование события", self.selected_date_for_menu, event_data=event_to_edit)
+        EventDialog(self, self.on_event_save, "Редактирование события", self.selected_date, event_data=event_to_edit)
 
     def delete_event(self):
-        print(f"Удаление события на {self.selected_date_for_menu}")
+        print(f"Удаление события на {self.selected_date}")
 
-        events_on_day = [e for e in self.events_list if e["date"] == self.selected_date_for_menu]
+        events_on_day = [e for e in self.events_list if e["date"] == self.selected_date]
         if not events_on_day:
             return
 

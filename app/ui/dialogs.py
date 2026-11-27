@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from app.core import Event
 
 class EventDialog(tk.Toplevel):
@@ -72,7 +73,7 @@ class EventDialog(tk.Toplevel):
         id = self.event_data["id"] if self.event_data is not None else None
 
         if (name := self.name_entry.get().strip()) == "":
-            tk.messagebox.showerror("Ошибка", "Название события не может быть пустым", parent=self)
+            messagebox.showerror("Ошибка", "Название события не может быть пустым", parent=self)
             return
 
         try:
@@ -81,7 +82,7 @@ class EventDialog(tk.Toplevel):
             if not (0 <= h <= 23 and 0 <= m <= 59):
                 raise ValueError("Время вне диапозона")
         except ValueError:
-            tk.messagebox.showerror("Ошибка", "Время вне диапозона", parent=self)
+            messagebox.showerror("Ошибка", "Время вне диапозона или введено некореектно", parent=self)
             return
 
         time_str = f"{h:02d}:{m:02d}"

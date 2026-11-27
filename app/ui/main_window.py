@@ -127,7 +127,7 @@ class App(tk.Tk):
 
     def on_event_save(self, new_data, old_data):
         if old_data is None:
-            self.events_list.append(new_data.to_dict())
+            self.events_list.append(new_data)
             Storage.save_events(self.events_list)
         else:
             index = self.events_list.index(old_data)
@@ -159,4 +159,3 @@ class App(tk.Tk):
 
         self.events_list.remove(events_on_day[0])
         Storage.save_events(self.events_list)
-        

@@ -138,7 +138,7 @@ class App(tk.Tk):
 
     def add_event(self):
         print(f"Добавление события на {self.selected_date_for_menu}")
-        add_event_window = EventDialog(self, self.on_event_save, "Создание события", self.selected_date_for_menu)
+        EventDialog(self, self.on_event_save, "Создание события", self.selected_date_for_menu)
 
     def edit_event(self):
         print(f"Редактирование события на {self.selected_date_for_menu}")

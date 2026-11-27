@@ -87,7 +87,7 @@ class EventDialog(tk.Toplevel):
         time_str = f"{h:02d}:{m:02d}"
         priority = self.priority_combo.get()
 
-        result = Event(self.date, time_str, name, id=id, priority=priority)
+        result = Event(self.date, time_str, name, id=id, priority=priority).to_dict()
 
         self.callback(result, self.event_data)
         self.destroy()

@@ -143,5 +143,12 @@ class App(tk.Tk):
     def edit_event(self):
         print(f"Редактирование события на {self.selected_date_for_menu}")
 
+        events_on_day = [e for e in self.events_list if e["date"] == self.selected_date_for_menu]
+        if not events_on_day:
+            return
+
+        event_to_edit = events_on_day[0]
+        EventDialog(self, self.on_event_save, "Редактирование события", self.selected_date_for_menu, event_data=event_to_edit)
+
     def delete_event(self):
         print(f"Удаление события на {self.selected_date_for_menu}")
